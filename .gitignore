@@ -11,5 +11,8 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
+# The produced binary
+pg_flame
+
 # Common name of flamegraph output
 flamegraph.html
