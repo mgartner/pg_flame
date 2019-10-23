@@ -137,5 +137,4 @@ const planJSON = `
     "Execution Time": 0.221
   }
 ]
-
 `

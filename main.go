@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"pg_flame/pkg/flame"
 	"pg_flame/pkg/html"
 	"pg_flame/pkg/plan"
 )
@@ -28,9 +27,7 @@ func main() {
 		handleErr(err)
 	}
 
-	f := flame.New(p)
-
-	err = html.Generate(os.Stdout, f)
+	err = html.Generate(os.Stdout, p)
 	if err != nil {
 		handleErr(err)
 	}
