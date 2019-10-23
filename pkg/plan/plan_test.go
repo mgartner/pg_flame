@@ -14,13 +14,26 @@ func TestNew(t *testing.T) {
 
 		_, p := New(input)
 
-		assert.Equal(t, "Limit", p.Root.Method)
+		assert.Equal(t, "Nested Loop", p.Root.Method)
 		assert.Equal(t, "", p.Root.Table)
-		assert.Equal(t, 0.022, p.Root.TotalTime)
+		assert.Equal(t, 0.049, p.Root.TotalTime)
 
-		assert.Equal(t, "Seq Scan", p.Root.Children[0].Method)
-		assert.Equal(t, "bears", p.Root.Children[0].Table)
-		assert.Equal(t, 0.018, p.Root.Children[0].TotalTime)
+		child := p.Root.Children[0]
+
+		assert.Equal(t, "Hash Join", child.Method)
+		assert.Equal(t, "users", child.Table)
+		assert.Equal(t, "users_pkey", child.Index)
+		assert.Equal(t, "((title)::text ~ '.*sql.*'::text)", child.Filter)
+		assert.Equal(t, "(id = 123)", child.JoinFilter)
+		assert.Equal(t, "((p.user_id = c.user_id) AND (p.id = c.post_id))", child.HashCond)
+		assert.Equal(t, "(id = p.user_id)", child.IndexCond)
+		assert.Equal(t, "(p.user_id = 123)", child.RecheckCond)
+		assert.Equal(t, 5, child.BuffersHit)
+		assert.Equal(t, 1, child.BuffersRead)
+		assert.Equal(t, 8, child.MemoryUsage)
+		assert.Equal(t, 1024, child.HashBuckets)
+		assert.Equal(t, 1, child.HashBatches)
+		assert.Equal(t, 0.049, child.TotalTime)
 	})
 
 	t.Run("returns an error with empty plan JSON", func(t *testing.T) {
@@ -55,18 +68,20 @@ const planJSON = `
 [
   {
     "Plan": {
-      "Node Type": "Limit",
+      "Node Type": "Nested Loop",
       "Parallel Aware": false,
-      "Startup Cost": 0.00,
-      "Total Cost": 0.11,
+      "Join Type": "Inner",
+      "Startup Cost": 265.38,
+      "Total Cost": 288.42,
       "Plan Rows": 1,
-      "Plan Width": 32,
-      "Actual Startup Time": 0.022,
-      "Actual Total Time": 0.022,
-      "Actual Rows": 1,
+      "Plan Width": 539,
+      "Actual Startup Time": 0.049,
+      "Actual Total Time": 0.049,
+      "Actual Rows": 0,
       "Actual Loops": 1,
-      "Shared Hit Blocks": 1,
-      "Shared Read Blocks": 0,
+      "Inner Unique": true,
+      "Shared Hit Blocks": 5,
+      "Shared Read Blocks": 1,
       "Shared Dirtied Blocks": 0,
       "Shared Written Blocks": 0,
       "Local Hit Blocks": 0,
@@ -77,21 +92,31 @@ const planJSON = `
       "Temp Written Blocks": 0,
       "Plans": [
         {
-          "Node Type": "Seq Scan",
+          "Node Type": "Hash Join",
+          "Relation Name": "users",
+          "Index Name": "users_pkey",
           "Parent Relationship": "Outer",
           "Parallel Aware": false,
-          "Relation Name": "bears",
-          "Alias": "bears",
-          "Startup Cost": 0.00,
-          "Total Cost": 11.00,
-          "Plan Rows": 100,
-          "Plan Width": 32,
-          "Actual Startup Time": 0.018,
-          "Actual Total Time": 0.018,
-          "Actual Rows": 1,
+          "Join Type": "Inner",
+          "Startup Cost": 13.50,
+          "Total Cost": 35.06,
+          "Plan Rows": 1,
+          "Plan Width": 543,
+          "Actual Startup Time": 0.049,
+          "Actual Total Time": 0.049,
+          "Actual Rows": 0,
           "Actual Loops": 1,
-          "Shared Hit Blocks": 1,
-          "Shared Read Blocks": 0,
+          "Inner Unique": false,
+          "Filter": "((title)::text ~ '.*sql.*'::text)",
+          "Hash Cond": "((p.user_id = c.user_id) AND (p.id = c.post_id))",
+          "Index Cond": "(id = p.user_id)",
+          "Join Filter": "(id = 123)",
+          "Recheck Cond": "(p.user_id = 123)",
+          "Hash Buckets": 1024,
+          "Hash Batches": 1,
+          "Peak Memory Usage": 8,
+          "Shared Hit Blocks": 5,
+          "Shared Read Blocks": 1,
           "Shared Dirtied Blocks": 0,
           "Shared Written Blocks": 0,
           "Local Hit Blocks": 0,
@@ -99,14 +124,17 @@ const planJSON = `
           "Local Dirtied Blocks": 0,
           "Local Written Blocks": 0,
           "Temp Read Blocks": 0,
-          "Temp Written Blocks": 0
+          "Temp Written Blocks": 0,
+          "Plans": [
+          ]
         }
       ]
     },
-    "Planning Time": 1.756,
+    "Planning Time": 2.523,
     "Triggers": [
     ],
-    "Execution Time": 0.059
+    "Execution Time": 0.221
   }
 ]
+
 `

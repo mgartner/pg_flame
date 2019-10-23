@@ -93,7 +93,6 @@ const flameTemplate = `
       .transitionEase(d3.easeCubic)
       .sort(true)
       .title("")
-      .onClick(onClick)
       .differential(false)
       .selfValue(false);
 
@@ -101,14 +100,16 @@ const flameTemplate = `
       .direction("s")
       .offset([8, 0])
       .attr('class', 'd3-flame-graph-tip')
-      .html(function(d) { return d.data.name + " | " + d.data.value + "ms"; });
+      .html(function(d) {
+        return d.data.name + " | " + d.data.value + "ms";
+      });
     flameGraph.tooltip(tip);
 
     var details = document.getElementById("details");
     flameGraph.setDetailsElement(details);
 
     var label = function(d) {
-     return d.data.name + " | " + d.data.value + "ms";;
+      return d.data.name + " | " + d.data.value + "ms" + " | " + d.data.detail;;
     }
     flameGraph.label(label);
 
@@ -135,10 +136,6 @@ const flameTemplate = `
 
     function resetZoom() {
       flameGraph.resetZoom();
-    }
-
-    function onClick(d) {
-      console.info("Clicked on " + d.data.name);
     }
     </script>
   </body>

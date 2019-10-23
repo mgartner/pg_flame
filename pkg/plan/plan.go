@@ -12,12 +12,21 @@ type Plan struct {
 }
 
 type Node struct {
-	Method string `json:"Node Type"`
-	Table  string `json:"Relation Name"`
-	// TODO StartupTime float64     `json:"Actual Startup Time"`
-	TotalTime float64 `json:"Actual Total Time"`
-	Children  []Node  `json:"Plans"`
-	// TODO conditionals and more information
+	Method      string  `json:"Node Type"`
+	Table       string  `json:"Relation Name"`
+	Index       string  `json:"Index Name"`
+	Filter      string  `json:"Filter"`
+	JoinFilter  string  `json:"Join Filter"`
+	HashCond    string  `json:"Hash Cond"`
+	IndexCond   string  `json:"Index Cond"`
+	RecheckCond string  `json:"Recheck Cond"`
+	BuffersHit  int     `json:"Shared Hit Blocks"`
+	BuffersRead int     `json:"Shared Read Blocks"`
+	MemoryUsage int     `json:"Peak Memory Usage"`
+	HashBuckets int     `json:"Hash Buckets"`
+	HashBatches int     `json:"Hash Batches"`
+	TotalTime   float64 `json:"Actual Total Time"`
+	Children    []Node  `json:"Plans"`
 }
 
 var ErrEmptyPlanJSON = errors.New("empty plan JSON")
