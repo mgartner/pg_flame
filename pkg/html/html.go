@@ -112,7 +112,7 @@ const flameTemplate = `
       .offset([8, 0])
       .attr('class', 'd3-flame-graph-tip')
       .html(function(d) {
-        return d.data.name + " | " + d.data.value + "ms";
+        return d.data.name + " | " + d.data.time + "ms";
       });
     flameGraph.tooltip(tip);
 

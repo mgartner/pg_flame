@@ -30,15 +30,63 @@ func TestNew(t *testing.T) {
 
 		assert.Equal(t, "Total", f.Name)
 		assert.Equal(t, 0.133, f.Value)
+		assert.Equal(t, 0.133, f.Time)
 
 		assert.Equal(t, "Query Planning", f.Children[0].Name)
+		assert.Equal(t, PLAN_COLOR, f.Children[0].Color)
 		assert.Equal(t, 0.01, f.Children[0].Value)
+		assert.Equal(t, 0.01, f.Children[0].Time)
 
 		assert.Equal(t, "Limit", f.Children[1].Name)
 		assert.Equal(t, 0.123, f.Children[1].Value)
+		assert.Equal(t, 0.123, f.Children[1].Time)
 
 		assert.Equal(t, "Seq Scan on bears", f.Children[1].Children[0].Name)
 		assert.Equal(t, 0.022, f.Children[1].Children[0].Value)
+		assert.Equal(t, 0.022, f.Children[1].Children[0].Time)
+	})
+
+	t.Run("handles InitPlan nodes", func(t *testing.T) {
+		p := plan.Plan{
+			ExecutionTree: plan.Node{
+				Method:    "Seq Scan",
+				TotalTime: 0.12,
+				Children: []plan.Node{
+					{
+						Method:             "Seq Scan",
+						Table:              "bears",
+						ParentRelationship: "InitPlan",
+						TotalTime:          0.2,
+						Children: []plan.Node{
+							{
+								Method:    "Seq Scan",
+								TotalTime: 0.12,
+							},
+						},
+					},
+				},
+			},
+		}
+
+		f := New(p)
+
+		assert.Equal(t, "Total", f.Name)
+		assert.Equal(t, 0.32, f.Value)
+		assert.Equal(t, 0.12, f.Time)
+
+		assert.Equal(t, "Seq Scan", f.Children[1].Name)
+		assert.Equal(t, 0.32, f.Children[1].Value)
+		assert.Equal(t, 0.12, f.Children[1].Time)
+		assert.Equal(t, "", f.Children[1].Color)
+		assert.False(t, f.Children[1].InitPlan)
+
+		assert.Equal(t, "Seq Scan on bears", f.Children[1].Children[0].Name)
+		assert.Equal(t, 0.2, f.Children[1].Children[0].Value)
+		assert.Equal(t, 0.2, f.Children[1].Children[0].Time)
+		assert.Equal(t, INIT_COLOR, f.Children[1].Children[0].Color)
+		assert.True(t, f.Children[1].Children[0].InitPlan)
+
+		assert.Equal(t, INIT_COLOR, f.Children[1].Children[0].Children[0].Color)
 	})
 
 }
@@ -76,16 +124,18 @@ func Test_detail(t *testing.T) {
 
 	t.Run("returns a table of details", func(t *testing.T) {
 		n := plan.Node{
-			Filter:      "(id = 123)",
-			BuffersHit:  8,
-			BuffersRead: 5,
-			MemoryUsage: 12,
-			HashBuckets: 1024,
-			HashBatches: 1,
+			ParentRelationship: "InitPlan",
+			Filter:             "(id = 123)",
+			BuffersHit:         8,
+			BuffersRead:        5,
+			MemoryUsage:        12,
+			HashBuckets:        1024,
+			HashBatches:        1,
 		}
 
 		expected := strings.Join([]string{
 			"<table class=\"table table-striped table-bordered\"><tbody>",
+			"<tr><th>Parent Relationship</th><td>InitPlan</td></tr>",
 			"<tr><th>Filter</th><td>(id = 123)</td></tr>",
 			"<tr><th>Join Filter</th><td></td></tr>",
 			"<tr><th>Hash Cond</th><td></td></tr>",

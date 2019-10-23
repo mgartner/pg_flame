@@ -23,6 +23,7 @@ func TestNew(t *testing.T) {
 		assert.Equal(t, "Hash Join", child.Method)
 		assert.Equal(t, "users", child.Table)
 		assert.Equal(t, "users_pkey", child.Index)
+		assert.Equal(t, "Outer", child.ParentRelationship)
 		assert.Equal(t, "((title)::text ~ '.*sql.*'::text)", child.Filter)
 		assert.Equal(t, "(id = 123)", child.JoinFilter)
 		assert.Equal(t, "((p.user_id = c.user_id) AND (p.id = c.post_id))", child.HashCond)
