@@ -7,8 +7,8 @@ import (
 )
 
 type Plan struct {
-	Root Node `json:"Plan"`
-	// TODO PlanningTime float64 `json:"Planning Time"`
+	PlanningTime  float64 `json:"Planning Time"`
+	ExecutionTree Node    `json:"Plan"`
 }
 
 type Node struct {

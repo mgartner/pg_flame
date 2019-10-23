@@ -12,7 +12,8 @@ func TestNew(t *testing.T) {
 
 	t.Run("creates a new Flame from a Plan", func(t *testing.T) {
 		p := plan.Plan{
-			Root: plan.Node{
+			PlanningTime: 0.01,
+			ExecutionTree: plan.Node{
 				Method:    "Limit",
 				TotalTime: 0.123,
 				Children: []plan.Node{
@@ -27,11 +28,17 @@ func TestNew(t *testing.T) {
 
 		f := New(p)
 
-		assert.Equal(t, "Limit", f.Name)
-		assert.Equal(t, 0.123, f.Value)
+		assert.Equal(t, "Total", f.Name)
+		assert.Equal(t, 0.133, f.Value)
 
-		assert.Equal(t, "Seq Scan on bears", f.Children[0].Name)
-		assert.Equal(t, 0.022, f.Children[0].Value)
+		assert.Equal(t, "Query Planning", f.Children[0].Name)
+		assert.Equal(t, 0.01, f.Children[0].Value)
+
+		assert.Equal(t, "Limit", f.Children[1].Name)
+		assert.Equal(t, 0.123, f.Children[1].Value)
+
+		assert.Equal(t, "Seq Scan on bears", f.Children[1].Children[0].Name)
+		assert.Equal(t, 0.022, f.Children[1].Children[0].Value)
 	})
 
 }

@@ -90,7 +90,7 @@ const flameTemplate = `
 
     <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
     <script type="text/javascript" src=https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@2.0.3/dist/d3-flamegraph.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@2.1.3/dist/d3-flamegraph.min.js"></script>
 
     <script type="text/javascript">
     var flameGraph = d3.flamegraph()
@@ -99,10 +99,13 @@ const flameTemplate = `
       .transitionDuration(750)
       .minFrameSize(5)
       .transitionEase(d3.easeCubic)
-      .sort(true)
+      .sort(false)
       .title("")
       .differential(false)
-      .selfValue(false);
+      .selfValue(false)
+      .setColorMapper(function(d, originalColor) {
+        return d.data.color || originalColor;
+      });
 
     var tip = d3.tip()
       .direction("s")

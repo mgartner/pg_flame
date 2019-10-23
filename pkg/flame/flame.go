@@ -11,14 +11,27 @@ type Flame struct {
 	Name     string  `json:"name"`
 	Value    float64 `json:"value"`
 	Detail   string  `json:"detail"`
+	Color    string  `json:"color"`
 	Children []Flame `json:"children"`
 }
 
 func New(p plan.Plan) Flame {
-	// TODO add planning time frame and total
 	// TODO handle CTE InitPlan
+	planningFlame := Flame{
+		Name:   "Query Planning",
+		Value:  p.PlanningTime,
+		Detail: "Time to generate the query plan",
+		Color:  "#00C05A",
+	}
 
-	return convert(p.Root)
+	executionFlame := convert(p.ExecutionTree)
+
+	return Flame{
+		Name:     "Total",
+		Value:    planningFlame.Value + executionFlame.Value,
+		Detail:   "This node includes planning and execution time",
+		Children: []Flame{planningFlame, executionFlame},
+	}
 }
 
 func convert(n plan.Node) Flame {

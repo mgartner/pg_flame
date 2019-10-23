@@ -14,11 +14,11 @@ func TestNew(t *testing.T) {
 
 		_, p := New(input)
 
-		assert.Equal(t, "Nested Loop", p.Root.Method)
-		assert.Equal(t, "", p.Root.Table)
-		assert.Equal(t, 0.049, p.Root.TotalTime)
+		assert.Equal(t, "Nested Loop", p.ExecutionTree.Method)
+		assert.Equal(t, "", p.ExecutionTree.Table)
+		assert.Equal(t, 0.049, p.ExecutionTree.TotalTime)
 
-		child := p.Root.Children[0]
+		child := p.ExecutionTree.Children[0]
 
 		assert.Equal(t, "Hash Join", child.Method)
 		assert.Equal(t, "users", child.Table)
