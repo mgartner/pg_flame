@@ -37,8 +37,7 @@ func main() {
 }
 
 func handleErr(err error) {
-	msg := fmt.Errorf("Error: %v", err)
-	fmt.Println(msg)
+	fmt.Fprintf(os.Stderr, "Error: %v", err)
 	os.Exit(1)
 }
 
