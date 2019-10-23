@@ -44,6 +44,14 @@ const flameTemplate = `
       .container {
         max-width: 990px;
       }
+
+      table {
+        font-family: monospace;
+      }
+
+      table th {
+        width: 250px;
+      }
     </style>
 
     <title>pg_flame</title>
@@ -109,7 +117,7 @@ const flameTemplate = `
     flameGraph.setDetailsElement(details);
 
     var label = function(d) {
-      return d.data.name + " | " + d.data.value + "ms" + " | " + d.data.detail;;
+      return d.data.detail;
     }
     flameGraph.label(label);
 

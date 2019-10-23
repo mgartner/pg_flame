@@ -49,55 +49,23 @@ func name(n plan.Node) string {
 }
 
 func detail(n plan.Node) string {
-	condWords := make([]string, 0, 5)
-	if n.Filter != "" {
-		condWords = append(condWords, fmt.Sprintf("Filter: %s", n.Filter))
-	}
-	if n.JoinFilter != "" {
-		condWords = append(condWords, fmt.Sprintf("Join Filter: %s", n.JoinFilter))
-	}
-	if n.HashCond != "" {
-		condWords = append(condWords, fmt.Sprintf("Hash Cond: %s", n.HashCond))
-	}
-	if n.IndexCond != "" {
-		condWords = append(condWords, fmt.Sprintf("Index Cond: %s", n.IndexCond))
-	}
-	if n.RecheckCond != "" {
-		condWords = append(condWords, fmt.Sprintf("Recheck Cond: %s", n.RecheckCond))
-	}
-	cond := strings.Join(condWords, ", ")
+	var b strings.Builder
+	b.WriteString(`<table class="table table-striped table-bordered"><tbody>`)
 
-	bufferWords := make([]string, 0, 2)
-	if n.BuffersHit != 0 {
-		bufferWords = append(bufferWords, fmt.Sprintf("Buffers Shared Hit: %v", n.BuffersHit))
-	}
-	if n.BuffersRead != 0 {
-		bufferWords = append(bufferWords, fmt.Sprintf("Buffers Shared Read: %v", n.BuffersRead))
-	}
-	buffer := strings.Join(bufferWords, ", ")
+	rowTemplate := "<tr><th>%s</th><td>%v</td></tr>"
 
-	hashWords := make([]string, 0, 3)
-	if n.HashBuckets != 0 {
-		hashWords = append(hashWords, fmt.Sprintf("Buckets: %v", n.HashBuckets))
-	}
-	if n.HashBatches != 0 {
-		hashWords = append(hashWords, fmt.Sprintf("Batches: %v", n.HashBatches))
-	}
-	if n.MemoryUsage != 0 {
-		hashWords = append(hashWords, fmt.Sprintf("Memory Usage: %vkB", n.MemoryUsage))
-	}
-	hash := strings.Join(hashWords, ", ")
+	fmt.Fprintf(&b, rowTemplate, "Filter", n.Filter)
+	fmt.Fprintf(&b, rowTemplate, "Join Filter", n.JoinFilter)
+	fmt.Fprintf(&b, rowTemplate, "Hash Cond", n.HashCond)
+	fmt.Fprintf(&b, rowTemplate, "Index Cond", n.IndexCond)
+	fmt.Fprintf(&b, rowTemplate, "Recheck Cond", n.RecheckCond)
+	fmt.Fprintf(&b, rowTemplate, "Buffers Shared Hit", n.BuffersHit)
+	fmt.Fprintf(&b, rowTemplate, "Buffers Shared Read", n.BuffersRead)
+	fmt.Fprintf(&b, rowTemplate, "Hash Buckets", n.HashBuckets)
+	fmt.Fprintf(&b, rowTemplate, "Hash Batches", n.HashBatches)
+	fmt.Fprintf(&b, rowTemplate, "Memory Usage", fmt.Sprintf("%vkB", n.HashBatches))
 
-	sections := make([]string, 0, 3)
-	if cond != "" {
-		sections = append(sections, cond)
-	}
-	if buffer != "" {
-		sections = append(sections, buffer)
-	}
-	if hash != "" {
-		sections = append(sections, hash)
-	}
+	b.WriteString(`</tbody></table>`)
 
-	return strings.Join(sections, " | ")
+	return b.String()
 }

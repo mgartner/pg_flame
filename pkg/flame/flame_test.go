@@ -1,6 +1,7 @@
 package flame
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -66,34 +67,7 @@ func Test_name(t *testing.T) {
 
 func Test_detail(t *testing.T) {
 
-	t.Run("returns filter details", func(t *testing.T) {
-		assert.Equal(t, "Filter: (id = 123)", detail(plan.Node{Filter: "(id = 123)"}))
-		assert.Equal(t, "Join Filter: (id = 123)", detail(plan.Node{JoinFilter: "(id = 123)"}))
-		assert.Equal(t, "Hash Cond: (id = 123)", detail(plan.Node{HashCond: "(id = 123)"}))
-		assert.Equal(t, "Index Cond: (id = 123)", detail(plan.Node{IndexCond: "(id = 123)"}))
-		assert.Equal(t, "Recheck Cond: (id = 123)", detail(plan.Node{RecheckCond: "(id = 123)"}))
-	})
-
-	t.Run("returns buffer details", func(t *testing.T) {
-		n := plan.Node{
-			BuffersHit:  8,
-			BuffersRead: 5,
-		}
-
-		assert.Equal(t, "Buffers Shared Hit: 8, Buffers Shared Read: 5", detail(n))
-	})
-
-	t.Run("returns hash details", func(t *testing.T) {
-		n := plan.Node{
-			MemoryUsage: 12,
-			HashBuckets: 1024,
-			HashBatches: 1,
-		}
-
-		assert.Equal(t, "Buckets: 1024, Batches: 1, Memory Usage: 12kB", detail(n))
-	})
-
-	t.Run("returns all information if available", func(t *testing.T) {
+	t.Run("returns a table of details", func(t *testing.T) {
 		n := plan.Node{
 			Filter:      "(id = 123)",
 			BuffersHit:  8,
@@ -103,7 +77,21 @@ func Test_detail(t *testing.T) {
 			HashBatches: 1,
 		}
 
-		expected := "Filter: (id = 123) | Buffers Shared Hit: 8, Buffers Shared Read: 5 | Buckets: 1024, Batches: 1, Memory Usage: 12kB"
+		expected := strings.Join([]string{
+			"<table class=\"table table-striped table-bordered\"><tbody>",
+			"<tr><th>Filter</th><td>(id = 123)</td></tr>",
+			"<tr><th>Join Filter</th><td></td></tr>",
+			"<tr><th>Hash Cond</th><td></td></tr>",
+			"<tr><th>Index Cond</th><td></td></tr>",
+			"<tr><th>Recheck Cond</th><td></td></tr>",
+			"<tr><th>Buffers Shared Hit</th><td>8</td></tr>",
+			"<tr><th>Buffers Shared Read</th><td>5</td></tr>",
+			"<tr><th>Hash Buckets</th><td>1024</td></tr>",
+			"<tr><th>Hash Batches</th><td>1</td></tr>",
+			"<tr><th>Memory Usage</th><td>1kB</td></tr>",
+			"</tbody></table>",
+		}, "")
+
 		assert.Equal(t, expected, detail(n))
 	})
 
