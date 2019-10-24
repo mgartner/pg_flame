@@ -24,7 +24,7 @@ const colorPlan = "#00C05A"
 const colorInit = "#C0C0C0"
 
 func Generate(w io.Writer, p plan.Plan) error {
-	err, f := buildFlame(p)
+	f, err := buildFlame(p)
 	if err != nil {
 		return err
 	}
@@ -37,7 +37,7 @@ func Generate(w io.Writer, p plan.Plan) error {
 	return nil
 }
 
-func buildFlame(p plan.Plan) (error, Flame) {
+func buildFlame(p plan.Plan) (Flame, error) {
 	planningFlame := Flame{
 		Name:   "Query Planning",
 		Value:  p.PlanningTime,
@@ -46,21 +46,21 @@ func buildFlame(p plan.Plan) (error, Flame) {
 		Color:  colorPlan,
 	}
 
-	err, executionFlame := convertPlanNode(p.ExecutionTree, "")
+	executionFlame, err := convertPlanNode(p.ExecutionTree, "")
 	if err != nil {
-		return err, Flame{}
+		return Flame{}, err
 	}
 
-	return nil, Flame{
+	return Flame{
 		Name:     "Total",
 		Value:    planningFlame.Value + executionFlame.Value,
 		Time:     planningFlame.Time + executionFlame.Time,
 		Detail:   fmt.Sprintf(detailSpan, "Includes planning and execution time"),
 		Children: []Flame{planningFlame, executionFlame},
-	}
+	}, nil
 }
 
-func convertPlanNode(n plan.Node, color string) (error, Flame) {
+func convertPlanNode(n plan.Node, color string) (Flame, error) {
 	initPlan := n.ParentRelationship == "InitPlan"
 	value := n.TotalTime
 
@@ -72,9 +72,9 @@ func convertPlanNode(n plan.Node, color string) (error, Flame) {
 	for _, childNode := range n.Children {
 
 		// Pass the color forward for grey InitPlan trees
-		err, f := convertPlanNode(childNode, color)
+		f, err := convertPlanNode(childNode, color)
 		if err != nil {
-			return err, Flame{}
+			return Flame{}, err
 		}
 
 		// Add to the total value if the child is an InitPlan node
@@ -85,12 +85,12 @@ func convertPlanNode(n plan.Node, color string) (error, Flame) {
 		childFlames = append(childFlames, f)
 	}
 
-	err, d := detail(n)
+	d, err := detail(n)
 	if err != nil {
-		return err, Flame{}
+		return Flame{}, err
 	}
 
-	return nil, Flame{
+	return Flame{
 		Name:     name(n),
 		Value:    value,
 		Time:     n.TotalTime,
@@ -98,7 +98,7 @@ func convertPlanNode(n plan.Node, color string) (error, Flame) {
 		Color:    color,
 		InitPlan: initPlan,
 		Children: childFlames,
-	}
+	}, nil
 }
 
 func name(n plan.Node) string {
@@ -112,13 +112,13 @@ func name(n plan.Node) string {
 	}
 }
 
-func detail(n plan.Node) (error, string) {
+func detail(n plan.Node) (string, error) {
 	var b bytes.Buffer
 
 	err := templateTable.Execute(&b, n)
 	if err != nil {
-		return err, ""
+		return "", err
 	}
 
-	return nil, b.String()
+	return b.String(), nil
 }

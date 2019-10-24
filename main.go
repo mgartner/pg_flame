@@ -22,7 +22,7 @@ func main() {
 		printHelp()
 	}
 
-	err, p := plan.New(os.Stdin)
+	p, err := plan.New(os.Stdin)
 	if err != nil {
 		handleErr(err)
 	}

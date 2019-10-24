@@ -23,6 +23,7 @@ func TestNew(t *testing.T) {
 		err := Generate(b, p)
 
 		assert.NoError(t, err)
+
 		assert.Contains(t, b.String(), p.ExecutionTree.Table)
 	})
 
@@ -46,7 +47,7 @@ func Test_buildFlame(t *testing.T) {
 			},
 		}
 
-		err, f := buildFlame(p)
+		f, err := buildFlame(p)
 
 		assert.NoError(t, err)
 
@@ -92,7 +93,7 @@ func Test_buildFlame(t *testing.T) {
 			},
 		}
 
-		err, f := buildFlame(p)
+		f, err := buildFlame(p)
 
 		assert.NoError(t, err)
 
@@ -154,11 +155,12 @@ func Test_detail(t *testing.T) {
 			MemoryUsage: 12,
 		}
 
-		err, d := detail(n)
+		d, err := detail(n)
 
 		assert.NoError(t, err)
+
 		assert.Contains(t, d, n.Filter)
-		assert.Contains(t, d, "12kB")
+		assert.Contains(t, d, "12 kB")
 	})
 
 }

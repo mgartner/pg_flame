@@ -12,7 +12,9 @@ func TestNew(t *testing.T) {
 	t.Run("decodes EXPLAIN ANALYZE plan JSON", func(t *testing.T) {
 		input := strings.NewReader(planJSON)
 
-		_, p := New(input)
+		p, err := New(input)
+
+		assert.NoError(t, err)
 
 		assert.Equal(t, "Nested Loop", p.ExecutionTree.Method)
 		assert.Equal(t, "", p.ExecutionTree.Table)
@@ -40,7 +42,7 @@ func TestNew(t *testing.T) {
 	t.Run("returns an error with empty plan JSON", func(t *testing.T) {
 		input := strings.NewReader("[]")
 
-		err, _ := New(input)
+		_, err := New(input)
 
 		assert.Error(t, err)
 		assert.Equal(t, ErrEmptyPlanJSON, err)
@@ -49,7 +51,7 @@ func TestNew(t *testing.T) {
 	t.Run("returns an error with invalid plan JSON", func(t *testing.T) {
 		input := strings.NewReader("{}")
 
-		err, _ := New(input)
+		_, err := New(input)
 
 		assert.Error(t, err)
 		assert.Equal(t, ErrInvalidPlanJSON, err)
@@ -58,7 +60,7 @@ func TestNew(t *testing.T) {
 	t.Run("returns an error with invalid JSON syntax", func(t *testing.T) {
 		input := strings.NewReader("[}")
 
-		err, _ := New(input)
+		_, err := New(input)
 
 		assert.Error(t, err)
 	})

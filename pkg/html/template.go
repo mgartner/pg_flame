@@ -220,7 +220,7 @@ var templateTable *template.Template = template.Must(template.New("table").Parse
     {{if .MemoryUsage}}
       <tr>
         <th>Memory Usage</th>
-        <td>{{.MemoryUsage}}kB</td>
+        <td>{{.MemoryUsage}} kB</td>
       </tr>
     {{end}}
   </tbody>

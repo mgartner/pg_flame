@@ -33,7 +33,7 @@ type Node struct {
 var ErrEmptyPlanJSON = errors.New("empty plan JSON")
 var ErrInvalidPlanJSON = errors.New("invalid plan JSON")
 
-func New(r io.Reader) (error, Plan) {
+func New(r io.Reader) (Plan, error) {
 	var plans []Plan
 
 	err := json.NewDecoder(r).Decode(&plans)
@@ -42,12 +42,12 @@ func New(r io.Reader) (error, Plan) {
 		if errors.As(err, &e) {
 			err = ErrInvalidPlanJSON
 		}
-		return err, Plan{}
+		return Plan{}, err
 	}
 
 	if len(plans) < 1 {
-		return ErrEmptyPlanJSON, Plan{}
+		return Plan{}, ErrEmptyPlanJSON
 	}
 
-	return nil, plans[0]
+	return plans[0], nil
 }
