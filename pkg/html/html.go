@@ -110,15 +110,14 @@ func convertPlanNode(n plan.Node, color string) Flame {
 }
 
 func name(n plan.Node) string {
-	if n.Table != "" && n.Index != "" {
+	switch {
+	case n.Table != "" && n.Index != "":
 		return fmt.Sprintf("%s using %s on %s", n.Method, n.Index, n.Table)
-	}
-
-	if n.Table != "" {
+	case n.Table != "":
 		return fmt.Sprintf("%s on %s", n.Method, n.Table)
+	default:
+		return n.Method
 	}
-
-	return n.Method
 }
 
 func detail(n plan.Node) string {

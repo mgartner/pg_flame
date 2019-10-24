@@ -4,19 +4,21 @@ A flamegraph generator for Postgres `EXPLAIN ANALYZE` output.
 
 ## Usage
 
-Generate an annotated query plan in JSON.
+1. Generate a query plan in JSON by prefixing a SQL query with
+`EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)`. Save the output to a file.
 
 ```
-psql lob_local -qAtc 'EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) SELECT id FROM bears' > plan.json
+psql lob_local -qAtc 'EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) SELECT id FROM users' > plan.json
 ```
 
-Generate the flamegraph.
+2. Then generate the flamegraph by passing the JSON as standard input to
+`pg_flame` and direct standard output to a file.
 
 ```
 cat plans.json | ./pg_flame > flamegraph.html
 ```
 
-Open `flamegraph.html` in a browser of your choice.
+3. Open `flamegraph.html` in a browser of your choice.
 
 ## Background
 
@@ -30,9 +32,9 @@ for debugging slow database queries.
 
 Pg_flame is in extension of that work for Postgres query plans. Instead of
 being used to graph CPU time of internal Postgres functions, it generates a
-visual hierarchy to query plans. This visualization identifies the relative
-time of each part of a query plan, helping to direct optimization efforts.
+visual hierarchy of query plans. This visualization identifies the relative
+time of each part of a query plan.
 
 This tool relies on the
-[`d3-flame-graph`](https://github.com/spiermar/d3-flame-graph) plugin to
+[`spiermar/d3-flame-graph`](https://github.com/spiermar/d3-flame-graph) plugin to
 generate the flamegraph.
