@@ -37,10 +37,11 @@ func New(r io.Reader) (error, Plan) {
 	var plans []Plan
 
 	err := json.NewDecoder(r).Decode(&plans)
-	var e *json.UnmarshalTypeError
-	if errors.As(err, &e) {
-		return ErrInvalidPlanJSON, Plan{}
-	} else if err != nil {
+	if err != nil {
+		var e *json.UnmarshalTypeError
+		if errors.As(err, &e) {
+			err = ErrInvalidPlanJSON
+		}
 		return err, Plan{}
 	}
 

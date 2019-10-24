@@ -16,9 +16,15 @@ type Flame struct {
 	Time     float64 `json:"time"`
 	Detail   string  `json:"detail"`
 	Color    string  `json:"color"`
-	InitPlan bool
+	InitPlan bool    `json:"init_plan"`
 	Children []Flame `json:"children"`
 }
+
+const tableHeader = `<table class="table table-striped table-bordered"><tbody>`
+const rowTemplate = "<tr><th>%s</th><td>%v</td></tr>"
+const tableFooter = `</tbody></table>`
+
+const detailTemplate = "<span>%s</span>"
 
 const colorPlan = "#00C05A"
 const colorInit = "#C0C0C0"
@@ -55,7 +61,7 @@ func buildFlame(p plan.Plan) Flame {
 		Name:   "Query Planning",
 		Value:  p.PlanningTime,
 		Time:   p.PlanningTime,
-		Detail: "Time to generate the query plan",
+		Detail: fmt.Sprintf(detailTemplate, "Time to generate the query plan"),
 		Color:  colorPlan,
 	}
 
@@ -65,7 +71,7 @@ func buildFlame(p plan.Plan) Flame {
 		Name:     "Total",
 		Value:    planningFlame.Value + executionFlame.Value,
 		Time:     planningFlame.Time + executionFlame.Time,
-		Detail:   "This node includes planning and execution time",
+		Detail:   fmt.Sprintf(detailTemplate, "Includes planning and execution time"),
 		Children: []Flame{planningFlame, executionFlame},
 	}
 }
@@ -117,23 +123,53 @@ func name(n plan.Node) string {
 
 func detail(n plan.Node) string {
 	var b strings.Builder
-	b.WriteString(`<table class="table table-striped table-bordered"><tbody>`)
+	b.WriteString(tableHeader)
 
-	rowTemplate := "<tr><th>%s</th><td>%v</td></tr>"
+	if n.ParentRelationship != "" {
+		fmt.Fprintf(&b, rowTemplate, "Parent Relationship", n.ParentRelationship)
+	}
 
-	fmt.Fprintf(&b, rowTemplate, "Parent Relationship", n.ParentRelationship)
-	fmt.Fprintf(&b, rowTemplate, "Filter", n.Filter)
-	fmt.Fprintf(&b, rowTemplate, "Join Filter", n.JoinFilter)
-	fmt.Fprintf(&b, rowTemplate, "Hash Cond", n.HashCond)
-	fmt.Fprintf(&b, rowTemplate, "Index Cond", n.IndexCond)
-	fmt.Fprintf(&b, rowTemplate, "Recheck Cond", n.RecheckCond)
-	fmt.Fprintf(&b, rowTemplate, "Buffers Shared Hit", n.BuffersHit)
-	fmt.Fprintf(&b, rowTemplate, "Buffers Shared Read", n.BuffersRead)
-	fmt.Fprintf(&b, rowTemplate, "Hash Buckets", n.HashBuckets)
-	fmt.Fprintf(&b, rowTemplate, "Hash Batches", n.HashBatches)
-	fmt.Fprintf(&b, rowTemplate, "Memory Usage", fmt.Sprintf("%vkB", n.HashBatches))
+	if n.Filter != "" {
+		fmt.Fprintf(&b, rowTemplate, "Filter", n.Filter)
+	}
 
-	b.WriteString(`</tbody></table>`)
+	if n.JoinFilter != "" {
+		fmt.Fprintf(&b, rowTemplate, "Join Filter", n.JoinFilter)
+	}
+
+	if n.HashCond != "" {
+		fmt.Fprintf(&b, rowTemplate, "Hash Cond", n.HashCond)
+	}
+
+	if n.IndexCond != "" {
+		fmt.Fprintf(&b, rowTemplate, "Index Cond", n.IndexCond)
+	}
+
+	if n.RecheckCond != "" {
+		fmt.Fprintf(&b, rowTemplate, "Recheck Cond", n.RecheckCond)
+	}
+
+	if n.BuffersHit != 0 {
+		fmt.Fprintf(&b, rowTemplate, "Buffers Shared Hit", n.BuffersHit)
+	}
+
+	if n.BuffersRead != 0 {
+		fmt.Fprintf(&b, rowTemplate, "Buffers Shared Read", n.BuffersRead)
+	}
+
+	if n.HashBuckets != 0 {
+		fmt.Fprintf(&b, rowTemplate, "Hash Buckets", n.HashBuckets)
+	}
+
+	if n.HashBatches != 0 {
+		fmt.Fprintf(&b, rowTemplate, "Hash Batches", n.HashBatches)
+	}
+
+	if n.MemoryUsage != 0 {
+		fmt.Fprintf(&b, rowTemplate, "Memory Usage", fmt.Sprintf("%vkB", n.MemoryUsage))
+	}
+
+	b.WriteString(tableFooter)
 
 	return b.String()
 }

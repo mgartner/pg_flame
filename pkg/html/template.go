@@ -44,6 +44,11 @@ const templateHTML = `
       table th {
         width: 250px;
       }
+
+      span {
+        font-weight: 700;
+        font-family: monospace;
+      }
     </style>
 
     <title>pg_flame</title>
