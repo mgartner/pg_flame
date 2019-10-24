@@ -7,12 +7,16 @@ A flamegraph generator for Postgres `EXPLAIN ANALYZE` output.
 1. Generate a query plan in JSON by prefixing a SQL query with
 `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)`. Save the output to a file.
 
+_Example:_
+
 ```
 psql lob_local -qAtc 'EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) SELECT id FROM users' > plan.json
 ```
 
 2. Then generate the flamegraph by passing the JSON as standard input to
 `pg_flame` and direct standard output to a file.
+
+_Example:_
 
 ```
 cat plans.json | ./pg_flame > flamegraph.html
