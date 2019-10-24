@@ -1,11 +1,9 @@
 package html
 
 import (
-	"encoding/json"
+	"bytes"
 	"fmt"
-	"html/template"
 	"io"
-	"strings"
 
 	"pg_flame/pkg/plan"
 )
@@ -20,35 +18,18 @@ type Flame struct {
 	Children []Flame `json:"children"`
 }
 
-const tableHeader = `<table class="table table-striped table-bordered"><tbody>`
-const rowTemplate = "<tr><th>%s</th><td>%v</td></tr>"
-const tableFooter = `</tbody></table>`
-
-const detailTemplate = "<span>%s</span>"
+const detailSpan = "<span>%s</span>"
 
 const colorPlan = "#00C05A"
 const colorInit = "#C0C0C0"
 
 func Generate(w io.Writer, p plan.Plan) error {
-	f := buildFlame(p)
-
-	t, err := template.New("pg_flame").Parse(templateHTML)
+	err, f := buildFlame(p)
 	if err != nil {
 		return err
 	}
 
-	flameJSON, err := json.Marshal(f)
-	if err != nil {
-		return err
-	}
-
-	data := struct {
-		Data template.JS
-	}{
-		Data: template.JS(flameJSON),
-	}
-
-	err = t.Execute(w, data)
+	err = templateHTML.Execute(w, f)
 	if err != nil {
 		return err
 	}
@@ -56,27 +37,30 @@ func Generate(w io.Writer, p plan.Plan) error {
 	return nil
 }
 
-func buildFlame(p plan.Plan) Flame {
+func buildFlame(p plan.Plan) (error, Flame) {
 	planningFlame := Flame{
 		Name:   "Query Planning",
 		Value:  p.PlanningTime,
 		Time:   p.PlanningTime,
-		Detail: fmt.Sprintf(detailTemplate, "Time to generate the query plan"),
+		Detail: fmt.Sprintf(detailSpan, "Time to generate the query plan"),
 		Color:  colorPlan,
 	}
 
-	executionFlame := convertPlanNode(p.ExecutionTree, "")
+	err, executionFlame := convertPlanNode(p.ExecutionTree, "")
+	if err != nil {
+		return err, Flame{}
+	}
 
-	return Flame{
+	return nil, Flame{
 		Name:     "Total",
 		Value:    planningFlame.Value + executionFlame.Value,
 		Time:     planningFlame.Time + executionFlame.Time,
-		Detail:   fmt.Sprintf(detailTemplate, "Includes planning and execution time"),
+		Detail:   fmt.Sprintf(detailSpan, "Includes planning and execution time"),
 		Children: []Flame{planningFlame, executionFlame},
 	}
 }
 
-func convertPlanNode(n plan.Node, color string) Flame {
+func convertPlanNode(n plan.Node, color string) (error, Flame) {
 	initPlan := n.ParentRelationship == "InitPlan"
 	value := n.TotalTime
 
@@ -88,7 +72,10 @@ func convertPlanNode(n plan.Node, color string) Flame {
 	for _, childNode := range n.Children {
 
 		// Pass the color forward for grey InitPlan trees
-		f := convertPlanNode(childNode, color)
+		err, f := convertPlanNode(childNode, color)
+		if err != nil {
+			return err, Flame{}
+		}
 
 		// Add to the total value if the child is an InitPlan node
 		if f.InitPlan {
@@ -98,11 +85,16 @@ func convertPlanNode(n plan.Node, color string) Flame {
 		childFlames = append(childFlames, f)
 	}
 
-	return Flame{
+	err, d := detail(n)
+	if err != nil {
+		return err, Flame{}
+	}
+
+	return nil, Flame{
 		Name:     name(n),
 		Value:    value,
 		Time:     n.TotalTime,
-		Detail:   detail(n),
+		Detail:   d,
 		Color:    color,
 		InitPlan: initPlan,
 		Children: childFlames,
@@ -120,55 +112,13 @@ func name(n plan.Node) string {
 	}
 }
 
-func detail(n plan.Node) string {
-	var b strings.Builder
-	b.WriteString(tableHeader)
+func detail(n plan.Node) (error, string) {
+	var b bytes.Buffer
 
-	if n.ParentRelationship != "" {
-		fmt.Fprintf(&b, rowTemplate, "Parent Relationship", n.ParentRelationship)
+	err := templateTable.Execute(&b, n)
+	if err != nil {
+		return err, ""
 	}
 
-	if n.Filter != "" {
-		fmt.Fprintf(&b, rowTemplate, "Filter", n.Filter)
-	}
-
-	if n.JoinFilter != "" {
-		fmt.Fprintf(&b, rowTemplate, "Join Filter", n.JoinFilter)
-	}
-
-	if n.HashCond != "" {
-		fmt.Fprintf(&b, rowTemplate, "Hash Cond", n.HashCond)
-	}
-
-	if n.IndexCond != "" {
-		fmt.Fprintf(&b, rowTemplate, "Index Cond", n.IndexCond)
-	}
-
-	if n.RecheckCond != "" {
-		fmt.Fprintf(&b, rowTemplate, "Recheck Cond", n.RecheckCond)
-	}
-
-	if n.BuffersHit != 0 {
-		fmt.Fprintf(&b, rowTemplate, "Buffers Shared Hit", n.BuffersHit)
-	}
-
-	if n.BuffersRead != 0 {
-		fmt.Fprintf(&b, rowTemplate, "Buffers Shared Read", n.BuffersRead)
-	}
-
-	if n.HashBuckets != 0 {
-		fmt.Fprintf(&b, rowTemplate, "Hash Buckets", n.HashBuckets)
-	}
-
-	if n.HashBatches != 0 {
-		fmt.Fprintf(&b, rowTemplate, "Hash Batches", n.HashBatches)
-	}
-
-	if n.MemoryUsage != 0 {
-		fmt.Fprintf(&b, rowTemplate, "Memory Usage", fmt.Sprintf("%vkB", n.MemoryUsage))
-	}
-
-	b.WriteString(tableFooter)
-
-	return b.String()
+	return nil, b.String()
 }

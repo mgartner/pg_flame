@@ -2,7 +2,6 @@ package html
 
 import (
 	"bytes"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -47,7 +46,9 @@ func Test_buildFlame(t *testing.T) {
 			},
 		}
 
-		f := buildFlame(p)
+		err, f := buildFlame(p)
+
+		assert.NoError(t, err)
 
 		assert.Equal(t, "Total", f.Name)
 		assert.Equal(t, 0.133, f.Value)
@@ -91,7 +92,9 @@ func Test_buildFlame(t *testing.T) {
 			},
 		}
 
-		f := buildFlame(p)
+		err, f := buildFlame(p)
+
+		assert.NoError(t, err)
 
 		assert.Equal(t, "Total", f.Name)
 		assert.Equal(t, 0.32, f.Value)
@@ -147,28 +150,15 @@ func Test_detail(t *testing.T) {
 
 	t.Run("returns a table of details", func(t *testing.T) {
 		n := plan.Node{
-			ParentRelationship: "InitPlan",
-			Filter:             "(id = 123)",
-			BuffersHit:         8,
-			BuffersRead:        5,
-			HashBuckets:        1024,
-			HashBatches:        1,
-			MemoryUsage:        12,
+			Filter:      "(id = 123)",
+			MemoryUsage: 12,
 		}
 
-		expected := strings.Join([]string{
-			"<table class=\"table table-striped table-bordered\"><tbody>",
-			"<tr><th>Parent Relationship</th><td>InitPlan</td></tr>",
-			"<tr><th>Filter</th><td>(id = 123)</td></tr>",
-			"<tr><th>Buffers Shared Hit</th><td>8</td></tr>",
-			"<tr><th>Buffers Shared Read</th><td>5</td></tr>",
-			"<tr><th>Hash Buckets</th><td>1024</td></tr>",
-			"<tr><th>Hash Batches</th><td>1</td></tr>",
-			"<tr><th>Memory Usage</th><td>12kB</td></tr>",
-			"</tbody></table>",
-		}, "")
+		err, d := detail(n)
 
-		assert.Equal(t, expected, detail(n))
+		assert.NoError(t, err)
+		assert.Contains(t, d, n.Filter)
+		assert.Contains(t, d, "12kB")
 	})
 
 }

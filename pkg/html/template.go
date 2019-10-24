@@ -1,6 +1,10 @@
 package html
 
-const templateHTML = `
+import (
+	"html/template"
+)
+
+var templateHTML *template.Template = template.Must(template.New("html").Parse(`
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -121,7 +125,7 @@ const templateHTML = `
     }
     flameGraph.label(label);
 
-    var data = {{.Data}};
+    var data = {{.}};
 
     d3.select("#chart")
       .datum(data)
@@ -148,4 +152,77 @@ const templateHTML = `
     </script>
   </body>
 </html>
-`
+`))
+
+var templateTable *template.Template = template.Must(template.New("table").Parse(`
+<table class="table table-striped table-bordered">
+  <tbody>
+    {{if .Filter}}
+      <tr>
+        <th>Filter</th>
+        <td>{{.Filter}}</td>
+      </tr>
+    {{end}}
+    {{if .ParentRelationship}}
+      <tr>
+        <th>Parent Relationship</th>
+        <td>{{.ParentRelationship}}</td>
+      </tr>
+    {{end}}
+    {{if .JoinFilter}}
+      <tr>
+        <th>Join Filter</th>
+        <td>{{.JoinFilter}}</td>
+      </tr>
+    {{end}}
+    {{if .HashCond}}
+      <tr>
+        <th>Hash Cond</th>
+        <td>{{.HashCond}}</td>
+      </tr>
+    {{end}}
+    {{if .IndexCond}}
+      <tr>
+        <th>Index Cond</th>
+        <td>{{.IndexCond}}</td>
+      </tr>
+    {{end}}
+    {{if .RecheckCond}}
+      <tr>
+        <th>Recheck Cond</th>
+        <td>{{.RecheckCond}}</td>
+      </tr>
+    {{end}}
+    {{if .BuffersHit}}
+      <tr>
+        <th>Buffers Shared Hit</th>
+        <td>{{.BuffersHit}}</td>
+      </tr>
+    {{end}}
+    {{if .BuffersRead}}
+      <tr>
+        <th>Buffers Shared Read</th>
+        <td>{{.BuffersRead}}</td>
+      </tr>
+    {{end}}
+    {{if .HashBuckets}}
+      <tr>
+        <th>Hash Buckets</th>
+        <td>{{.HashBuckets}}</td>
+      </tr>
+    {{end}}
+    {{if .HashBatches}}
+      <tr>
+        <th>Hash Batches</th>
+        <td>{{.HashBatches}}</td>
+      </tr>
+    {{end}}
+    {{if .MemoryUsage}}
+      <tr>
+        <th>Memory Usage</th>
+        <td>{{.MemoryUsage}}kB</td>
+      </tr>
+    {{end}}
+  </tbody>
+</table>
+`))
