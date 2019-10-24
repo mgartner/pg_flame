@@ -2,10 +2,24 @@
 
 A flamegraph generator for Postgres `EXPLAIN ANALYZE` output.
 
+<a href="https://mgartner.github.io/pg_flame/flamegraph.html">
+  <img width="700" src="https://user-images.githubusercontent.com/1128750/67529948-7d46b000-f672-11e9-918a-a6e9a1e42cd4.png">
+</a>
+
+## Demo
+
+Try the demo [here](https://mgartner.github.io/pg_flame/flamegraph.html).
+
+## Installation
+
+Coming soon!
+
 ## Usage
 
-1. Generate a query plan in JSON by prefixing a SQL query with
-`EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)`. Save the output to a file.
+1. Generate a query plan in JSON by prefixing a SQL query with `EXPLAIN
+   (ANALYZE, BUFFERS, FORMAT JSON)`. Save the output to a file. Example query
+   plan JSON can be found
+   [here](https://mgartner.github.io/pg_flame/plan.json).
 
 _Example:_
 
