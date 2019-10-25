@@ -16,3 +16,6 @@ pg_flame
 
 # Common name of flamegraph output
 flamegraph.html
+
+# Distribution directory
+dist
