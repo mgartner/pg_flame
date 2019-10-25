@@ -16,7 +16,7 @@ Download one of the compiled binaries [in the releases
 tab](https://github.com/mgartner/pg_flame/releases).
 
 If you'd like to build a binary from the source code, run the following
-command. Note that compiling requires Go version 1.13+.
+commands. Note that compiling requires Go version 1.13+.
 
 ```
 git clone https://github.com/mgartner/pg_flame.git
