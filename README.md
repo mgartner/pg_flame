@@ -43,7 +43,7 @@ psql lob_local -qAtc 'EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) SELECT id FROM use
 _Example:_
 
 ```
-cat plans.json | ./pg_flame > flamegraph.html
+cat plan.json | ./pg_flame > flamegraph.html
 ```
 
 3. Open `flamegraph.html` in a browser of your choice.
