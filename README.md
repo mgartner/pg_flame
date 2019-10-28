@@ -51,15 +51,16 @@ cat plan.json | ./pg_flame > flamegraph.html
 ## Background
 
 [Flamegraphs](http://www.brendangregg.com/flamegraphs.html) were invented by
-Brendan Gregg to visualize CPU consumption of profiled code-paths of software.
+Brendan Gregg to visualize CPU consumption per code-path of profiled software.
 They are useful visualization tools in many types of performance
-investigations. Luca Canali has previously shown the benefits of using
-[flamegraph visualizations of Oracle database
-profiles](https://externaltable.blogspot.com/2014/05/flame-graphs-for-oracle.html)
-for debugging slow database queries.
+investigations. Flamegraphs have been used to visualize Oracle database
+[query
+plans](https://blog.tanelpoder.com/posts/visualizing-sql-plan-execution-time-with-flamegraphs/)
+and [query
+executions](https://externaltable.blogspot.com/2014/05/flame-graphs-for-oracle.html)
+, proving useful for debugging slow database queries.
 
-Pg_flame is in extension of that work for Postgres query plans. Instead of
-being used to graph CPU time of internal Postgres functions, it generates a
+Pg_flame is in extension of that work for Postgres query plans. It generates a
 visual hierarchy of query plans. This visualization identifies the relative
 time of each part of a query plan.
 
