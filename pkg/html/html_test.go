@@ -13,8 +13,8 @@ func TestNew(t *testing.T) {
 	t.Run("writes an HTML flamegraph based on a Flame", func(t *testing.T) {
 		p := plan.Plan{
 			ExecutionTree: plan.Node{
-				Table:     "bears",
-				TotalTime: 0.022,
+				Table:           "bears",
+				ActualTotalTime: 0.022,
 			},
 		}
 
@@ -35,13 +35,13 @@ func Test_buildFlame(t *testing.T) {
 		p := plan.Plan{
 			PlanningTime: 0.01,
 			ExecutionTree: plan.Node{
-				Method:    "Limit",
-				TotalTime: 0.123,
+				Method:          "Limit",
+				ActualTotalTime: 0.123,
 				Children: []plan.Node{
 					{
-						Method:    "Seq Scan",
-						Table:     "bears",
-						TotalTime: 0.022,
+						Method:          "Seq Scan",
+						Table:           "bears",
+						ActualTotalTime: 0.022,
 					},
 				},
 			},
@@ -74,18 +74,18 @@ func Test_buildFlame(t *testing.T) {
 	t.Run("handles InitPlan nodes", func(t *testing.T) {
 		p := plan.Plan{
 			ExecutionTree: plan.Node{
-				Method:    "Seq Scan",
-				TotalTime: 0.12,
+				Method:          "Seq Scan",
+				ActualTotalTime: 0.12,
 				Children: []plan.Node{
 					{
 						Method:             "Seq Scan",
 						Table:              "bears",
 						ParentRelationship: "InitPlan",
-						TotalTime:          0.2,
+						ActualTotalTime:    0.2,
 						Children: []plan.Node{
 							{
-								Method:    "Seq Scan",
-								TotalTime: 0.12,
+								Method:          "Seq Scan",
+								ActualTotalTime: 0.12,
 							},
 						},
 					},
