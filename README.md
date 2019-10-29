@@ -3,7 +3,7 @@
 A flamegraph generator for Postgres `EXPLAIN ANALYZE` output.
 
 <a href="https://mgartner.github.io/pg_flame/flamegraph.html">
-  <img width="700" src="https://user-images.githubusercontent.com/1128750/67529948-7d46b000-f672-11e9-918a-a6e9a1e42cd4.png">
+  <img width="700" src="https://user-images.githubusercontent.com/1128750/67738754-16f0c300-f9cd-11e9-8fc2-6acc6f288841.png">
 </a>
 
 ## Demo
