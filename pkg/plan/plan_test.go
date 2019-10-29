@@ -18,25 +18,41 @@ func TestNew(t *testing.T) {
 
 		assert.Equal(t, "Nested Loop", p.ExecutionTree.Method)
 		assert.Equal(t, "", p.ExecutionTree.Table)
-		assert.Equal(t, 0.049, p.ExecutionTree.TotalTime)
+		assert.Equal(t, 0.049, p.ExecutionTree.ActualTotalTime)
 
 		child := p.ExecutionTree.Children[0]
 
 		assert.Equal(t, "Hash Join", child.Method)
 		assert.Equal(t, "users", child.Table)
 		assert.Equal(t, "users_pkey", child.Index)
+		assert.Equal(t, "u", child.Alias)
 		assert.Equal(t, "Outer", child.ParentRelationship)
+
+		assert.Equal(t, 35.06, child.PlanCost)
+		assert.Equal(t, 1, child.PlanRows)
+		assert.Equal(t, 543, child.PlanWidth)
+
+		assert.Equal(t, 0.049, child.ActualTotalTime)
+		assert.Equal(t, 5, child.ActualRows)
+		assert.Equal(t, 1, child.ActualLoops)
+
 		assert.Equal(t, "((title)::text ~ '.*sql.*'::text)", child.Filter)
 		assert.Equal(t, "(id = 123)", child.JoinFilter)
 		assert.Equal(t, "((p.user_id = c.user_id) AND (p.id = c.post_id))", child.HashCond)
 		assert.Equal(t, "(id = p.user_id)", child.IndexCond)
 		assert.Equal(t, "(p.user_id = 123)", child.RecheckCond)
+
 		assert.Equal(t, 5, child.BuffersHit)
 		assert.Equal(t, 1, child.BuffersRead)
-		assert.Equal(t, 8, child.MemoryUsage)
+
 		assert.Equal(t, 1024, child.HashBuckets)
 		assert.Equal(t, 1, child.HashBatches)
-		assert.Equal(t, 0.049, child.TotalTime)
+		assert.Equal(t, 8, child.MemoryUsage)
+
+		assert.Equal(t, []string{"u.id", "u.email DESC"}, child.SortKey)
+		assert.Equal(t, "quicksort", child.SortMethod)
+		assert.Equal(t, 33, child.SortSpaceUsed)
+		assert.Equal(t, "Memory", child.SortSpaceType)
 	})
 
 	t.Run("returns an error with empty plan JSON", func(t *testing.T) {
@@ -97,6 +113,7 @@ const planJSON = `
         {
           "Node Type": "Hash Join",
           "Relation Name": "users",
+          "Alias": "u",
           "Index Name": "users_pkey",
           "Parent Relationship": "Outer",
           "Parallel Aware": false,
@@ -107,7 +124,7 @@ const planJSON = `
           "Plan Width": 543,
           "Actual Startup Time": 0.049,
           "Actual Total Time": 0.049,
-          "Actual Rows": 0,
+          "Actual Rows": 5,
           "Actual Loops": 1,
           "Inner Unique": false,
           "Filter": "((title)::text ~ '.*sql.*'::text)",
@@ -122,6 +139,10 @@ const planJSON = `
           "Shared Read Blocks": 1,
           "Shared Dirtied Blocks": 0,
           "Shared Written Blocks": 0,
+          "Sort Key": ["u.id", "u.email DESC"],
+          "Sort Method": "quicksort",
+          "Sort Space Used": 33,
+          "Sort Space Type": "Memory",
           "Local Hit Blocks": 0,
           "Local Read Blocks": 0,
           "Local Dirtied Blocks": 0,

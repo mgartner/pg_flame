@@ -45,8 +45,13 @@ var templateHTML *template.Template = template.Must(template.New("html").Parse(`
         font-family: monospace;
       }
 
-      table th {
+      .table tbody tr th {
+        padding: 4px 8px;
         width: 250px;
+      }
+
+      .table tbody tr td {
+        padding: 4px 8px;
       }
 
       span {
@@ -113,7 +118,7 @@ var templateHTML *template.Template = template.Must(template.New("html").Parse(`
       .offset([8, 0])
       .attr('class', 'd3-flame-graph-tip')
       .html(function(d) {
-        return d.data.name + " | " + d.data.time + "ms";
+        return d.data.name + " | " + d.data.time + " ms";
       });
     flameGraph.tooltip(tip);
 
@@ -157,16 +162,76 @@ var templateHTML *template.Template = template.Must(template.New("html").Parse(`
 var templateTable *template.Template = template.Must(template.New("table").Parse(`
 <table class="table table-striped table-bordered">
   <tbody>
-    {{if .Filter}}
+    {{if .Method}}
       <tr>
-        <th>Filter</th>
-        <td>{{.Filter}}</td>
+        <th>Method</th>
+        <td>{{.Method}}</td>
+      </tr>
+    {{end}}
+    {{if .Table}}
+      <tr>
+        <th>Table</th>
+        <td>{{.Table}}</td>
+      </tr>
+    {{end}}
+    {{if .Index}}
+      <tr>
+        <th>Index</th>
+        <td>{{.Index}}</td>
+      </tr>
+    {{end}}
+    {{if .Alias}}
+      <tr>
+        <th>Alias</th>
+        <td>{{.Alias}}</td>
       </tr>
     {{end}}
     {{if .ParentRelationship}}
       <tr>
         <th>Parent Relationship</th>
         <td>{{.ParentRelationship}}</td>
+      </tr>
+    {{end}}
+    {{if .PlanCost}}
+      <tr>
+        <th>Plan Cost</th>
+        <td>{{.PlanCost}}</td>
+      </tr>
+    {{end}}
+    {{if .PlanRows}}
+      <tr>
+        <th>Plan Rows</th>
+        <td>{{.PlanRows}}</td>
+      </tr>
+    {{end}}
+    {{if .PlanWidth}}
+      <tr>
+        <th>Plan Width</th>
+        <td>{{.PlanWidth}}</td>
+      </tr>
+    {{end}}
+    {{if .ActualTotalTime}}
+      <tr>
+        <th>Actual Total Time</th>
+        <td>{{.ActualTotalTime}} ms</td>
+      </tr>
+    {{end}}
+    {{if .ActualRows}}
+      <tr>
+        <th>Actual Rows</th>
+        <td>{{.ActualRows}}</td>
+      </tr>
+    {{end}}
+    {{if .ActualLoops}}
+      <tr>
+        <th>Actual Loops</th>
+        <td>{{.ActualLoops}}</td>
+      </tr>
+    {{end}}
+    {{if .Filter}}
+      <tr>
+        <th>Filter</th>
+        <td>{{.Filter}}</td>
       </tr>
     {{end}}
     {{if .JoinFilter}}
@@ -221,6 +286,30 @@ var templateTable *template.Template = template.Must(template.New("table").Parse
       <tr>
         <th>Memory Usage</th>
         <td>{{.MemoryUsage}} kB</td>
+      </tr>
+    {{end}}
+    {{if .SortKey}}
+      <tr>
+        <th>Sort Key</th>
+        <td>{{.SortKey}}</td>
+      </tr>
+    {{end}}
+    {{if .SortMethod}}
+      <tr>
+        <th>Sort Method</th>
+        <td>{{.SortMethod}}</td>
+      </tr>
+    {{end}}
+    {{if .SortSpaceUsed}}
+      <tr>
+        <th>Sort Space Used</th>
+        <td>{{.SortSpaceUsed}} kB</td>
+      </tr>
+    {{end}}
+    {{if .SortSpaceType}}
+      <tr>
+        <th>Sort Space Type</th>
+        <td>{{.SortSpaceType}}</td>
       </tr>
     {{end}}
   </tbody>

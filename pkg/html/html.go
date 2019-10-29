@@ -62,7 +62,7 @@ func buildFlame(p plan.Plan) (Flame, error) {
 
 func convertPlanNode(n plan.Node, color string) (Flame, error) {
 	initPlan := n.ParentRelationship == "InitPlan"
-	value := n.TotalTime
+	value := n.ActualTotalTime
 
 	if initPlan {
 		color = colorInit
@@ -93,7 +93,7 @@ func convertPlanNode(n plan.Node, color string) (Flame, error) {
 	return Flame{
 		Name:     name(n),
 		Value:    value,
-		Time:     n.TotalTime,
+		Time:     n.ActualTotalTime,
 		Detail:   d,
 		Color:    color,
 		InitPlan: initPlan,
