@@ -1,4 +1,4 @@
-# pg_flame
+# pg_flame [![Build Status](https://travis-ci.com/mgartner/pg_flame.svg?branch=master)](https://travis-ci.com/mgartner/pg_flame)
 
 A flamegraph generator for Postgres `EXPLAIN ANALYZE` output.
 
