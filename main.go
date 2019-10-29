@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	version  = "1.0"
+	version  = "1.1"
 	hFlag    = flag.Bool("h", false, "print help info")
 	helpFlag = flag.Bool("help", false, "print help info")
 )
