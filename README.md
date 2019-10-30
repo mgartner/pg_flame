@@ -12,41 +12,84 @@ Try the demo [here](https://mgartner.github.io/pg_flame/flamegraph.html).
 
 ## Installation
 
+### Download pre-compiled binary
+
 Download one of the compiled binaries [in the releases
-tab](https://github.com/mgartner/pg_flame/releases).
+tab](https://github.com/mgartner/pg_flame/releases). Once downloaded, move
+`pg_flame` into your `$PATH`.
+
+### Docker
+
+Alternatively, if you'd like to use Docker to build the program, you can.
+
+```
+$ git clone https://github.com/mgartner/pg_flame.git
+$ cd pg_flame
+$ docker build --tag 'pg_flame' .
+```
+
+### Build from source
 
 If you'd like to build a binary from the source code, run the following
 commands. Note that compiling requires Go version 1.13+.
 
 ```
-git clone https://github.com/mgartner/pg_flame.git
-cd pg_flame
-go build
+$ git clone https://github.com/mgartner/pg_flame.git
+$ cd pg_flame
+$ go build
 ```
+
+A `pg_flame` binary will be created that you can place in your `$PATH`.
 
 ## Usage
 
-1. Generate a query plan in JSON by prefixing a SQL query with `EXPLAIN
-   (ANALYZE, BUFFERS, FORMAT JSON)`. Save the output to a file. Example query
-   plan JSON can be found
-   [here](https://mgartner.github.io/pg_flame/plan.json).
+The `pg_flame` program reads a JSON query plan from standard input and writes
+the flamegraph HTML to standard ouput. Therefore you can pipe and direct input
+and output however you desire.
 
-_Example:_
+### Examples
 
-```
-psql lob_local -qAtc 'EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) SELECT id FROM users' > plan.json
-```
+#### One-step
 
-2. Then generate the flamegraph by passing the JSON as standard input to
-`pg_flame` and direct standard output to a file.
-
-_Example:_
-
-```
-cat plan.json | ./pg_flame > flamegraph.html
+```bash
+$ psql dbname -qAtc 'EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) SELECT id FROM users' \
+    | pg_flame \
+    > flamegraph.html \
+    && open flamegraph.html
 ```
 
-3. Open `flamegraph.html` in a browser of your choice.
+#### Multi-step with SQL file
+
+Create a SQL file with the `EXPLAIN ANALYZE` query.
+
+```sql
+-- query.sql
+EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)
+SELECT id
+FROM users
+```
+
+Then run the query and save the JSON to a file.
+
+```bash
+$ psql dbname -qAtf query.sql > plan.json
+```
+
+Finally, generate the flamegraph HTML.
+
+```
+$ cat plan.json | pg_flame > flamegraph.html
+```
+
+#### Docker
+
+If you've followed the Docker installation steps above, you can pipe query plan JSON to a container and save the output HTML.
+
+```
+$ psql dbname -qAtc 'EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) SELECT id FROM users' \
+    | docker run -i pg_flame \
+    > flamegraph.html
+```
 
 ## Background
 
