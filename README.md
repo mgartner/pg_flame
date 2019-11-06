@@ -1,4 +1,4 @@
-# pg_flame [![Version](https://img.shields.io/badge/version-v1.1-blue.svg)](https://github.com/mgartner/pg_flame/releases) [![Build Status](https://travis-ci.com/mgartner/pg_flame.svg?branch=master)](https://travis-ci.com/mgartner/pg_flame)
+# pg_flame [![Build Status](https://travis-ci.com/mgartner/pg_flame.svg?branch=master)](https://travis-ci.com/mgartner/pg_flame)
 
 A flamegraph generator for Postgres `EXPLAIN ANALYZE` output.
 
@@ -47,9 +47,7 @@ The `pg_flame` program reads a JSON query plan from standard input and writes
 the flamegraph HTML to standard ouput. Therefore you can pipe and direct input
 and output however you desire.
 
-### Examples
-
-#### One-step
+### Example: One-step
 
 ```bash
 $ psql dbname -qAtc 'EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) SELECT id FROM users' \
@@ -58,7 +56,7 @@ $ psql dbname -qAtc 'EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) SELECT id FROM user
     && open flamegraph.html
 ```
 
-#### Multi-step with SQL file
+### Example: Multi-step with SQL file
 
 Create a SQL file with the `EXPLAIN ANALYZE` query.
 
@@ -81,7 +79,7 @@ Finally, generate the flamegraph HTML.
 $ cat plan.json | pg_flame > flamegraph.html
 ```
 
-#### Docker
+### Example: Docker
 
 If you've followed the Docker installation steps above, you can pipe query plan JSON to a container and save the output HTML.
 
