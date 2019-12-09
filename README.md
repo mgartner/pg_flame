@@ -23,9 +23,7 @@ tab](https://github.com/mgartner/pg_flame/releases). Once downloaded, move
 Alternatively, if you'd like to use Docker to build the program, you can.
 
 ```
-$ git clone https://github.com/mgartner/pg_flame.git
-$ cd pg_flame
-$ docker build --tag 'pg_flame' .
+$ docker pull mgartner/pg_flame
 ```
 
 ### Build from source
@@ -81,7 +79,8 @@ $ cat plan.json | pg_flame > flamegraph.html
 
 ### Example: Docker
 
-If you've followed the Docker installation steps above, you can pipe query plan JSON to a container and save the output HTML.
+If you've followed the Docker installation steps above, you can pipe query plan
+JSON to a container and save the output HTML.
 
 ```
 $ psql dbname -qAtc 'EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) SELECT id FROM users' \
