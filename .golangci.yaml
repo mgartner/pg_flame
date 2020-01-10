@@ -1,0 +1,29 @@
+output:
+  format: tab
+linters:
+  disable-all: true
+  enable:
+    - deadcode
+    - depguard
+    - dupl
+    - goconst
+    - gocritic
+    - gocyclo
+    - gofmt
+    - goimports
+    - golint
+    - gosec
+    - govet
+    - ineffassign
+    - maligned
+    - misspell
+    - prealloc
+    - scopelint
+    - structcheck
+    - typecheck
+    - unconvert
+    - varcheck
+issues:
+  exclude-use-default: false
+  max-per-linter: 0
+  max-same-issues: 0
