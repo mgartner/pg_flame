@@ -15,3 +15,13 @@ snapshot:
   name_template: "{{ .Tag }}-next"
 changelog:
   sort: asc
+brews:
+  -
+    name: pg_flame
+    goarm: 6
+    github:
+      owner: mgartner
+      name: homebrew-tap
+    folder: Formula
+    homepage: "https://github.com/mgartner/pg_flame"
+    description: "A flamegraph generator for Postgres EXPLAIN ANALYZE output."
