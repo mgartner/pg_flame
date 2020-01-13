@@ -10,7 +10,8 @@ import (
 )
 
 var (
-	version  = "1.1"
+	// goreleaser automatically overrides this based on the tag
+	version  = "dev"
 	hFlag    = flag.Bool("h", false, "print help info")
 	helpFlag = flag.Bool("help", false, "print help info")
 )
