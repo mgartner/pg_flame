@@ -12,6 +12,14 @@ Try the demo [here](https://mgartner.github.io/pg_flame/flamegraph.html).
 
 ## Installation
 
+### Homebrew
+
+You can install via Homebrew with the follow command:
+
+```
+$ brew install mgartner/tap/pg_flame
+```
+
 ### Download pre-compiled binary
 
 Download one of the compiled binaries [in the releases
